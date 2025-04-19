@@ -1,8 +1,5 @@
 import 'package:http/http.dart' as http;
-import 'package:test_flut/domain/api.dart';
 import 'dart:convert';
-import '../api.dart';
-
 import '../models/user.dart';
 
 class UserApiService {

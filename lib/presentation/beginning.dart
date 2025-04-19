@@ -12,76 +12,96 @@ class Beginning extends StatefulWidget {
 class _BeginningState extends State<Beginning> {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Масштаб для volna зависит напрямую от ширины экрана
+    final double volnaScale = screenWidth / screenWidth;
+
     return Scaffold(
-      backgroundColor: Color.fromRGBO(39, 41, 39, 1),
-      body: Stack(children: [
-        Transform.translate(
-            offset: Offset(-9, 400),
-            child: Transform.rotate(
-                angle: 0,
-                child: Transform.scale(
-                  scale: 1.65,
-                  child: SvgPicture.asset(
-                    "assets/svg/volna-01.svg",
-                    width: 684,
-                    height: 585,
-                  ),
-                ))),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              'assets/svg/SQL2-01.svg',
-              width: 469,
-              height: 186,
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 20, bottom: 30),
-              child: Flexible(
-                  child: Text(
-                "Ваше интерактивное обучение начинается здесь!",
-                style: TextStyle(
-                    fontSize: 36,
-                    fontFamily: "Jost",
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white),
-              )),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 20, bottom: 100),
-              child: Flexible(
-                  child: Text(
-                "Учитесь работать с базами данных интересно. Присоединяйтесь!",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontFamily: "Jost",
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white),
-              )),
-            ),
-            SizedBox(height: 130),
-            MaterialButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => TaskListPage()));
-              },
-              color: Color.fromRGBO(253, 253, 253, 1),
-              minWidth: 280,
-              height: 80,
-              shape: StadiumBorder(),
-              child: Text(
-                "Начать обучение",
-                style: TextStyle(
-                    color: Color.fromRGBO(183, 88, 255, 1),
-                    fontSize: 23,
-                    fontFamily: "Jost",
-                    fontWeight: FontWeight.w900),
+      backgroundColor: const Color.fromRGBO(39, 41, 39, 1),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Transform.scale(
+                scale: volnaScale,
+                child: SvgPicture.asset(
+                  "assets/svg/volna2-01.svg",
+                  width: screenWidth * 1.2,
+                  height: screenHeight * 0.5,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ],
-        ),
-      ]),
+          ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/svg/SQL2-01.svg',
+                        width: screenWidth * 0.7,
+                        height: screenHeight * 0.2,
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        "Ваше интерактивное обучение начинается здесь!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.06,
+                          fontFamily: "Jost",
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        "Учитесь работать с базами данных интересно. Присоединяйтесь!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.045,
+                          fontFamily: "Jost",
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: screenHeight * 0.1),
+                      MaterialButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const TaskListPage()),
+                          );
+                        },
+                        color: const Color.fromRGBO(253, 253, 253, 1),
+                        minWidth: screenWidth * 0.7,
+                        height: 70,
+                        shape: const StadiumBorder(),
+                        child: Text(
+                          "Начать обучение",
+                          style: TextStyle(
+                            color: const Color.fromRGBO(183, 88, 255, 1),
+                            fontSize: screenWidth * 0.055,
+                            fontFamily: "Jost",
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

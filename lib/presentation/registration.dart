@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test_flut/presentation/logo.dart';
 import '../domain/services/user_api.dart';
 import '../domain/models/user.dart';
-import '../domain/api.dart';
 import 'package:test_flut/presentation/login.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -23,6 +24,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
 
   final UserApiService _userService = UserApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuth();
+  }
+
+  Future<void> _checkAuth() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('sessionToken');
+
+    if (token != null && token.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SplashScreen()),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -74,7 +93,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(39, 41, 39, 1),
       appBar: AppBar(backgroundColor: const Color.fromRGBO(39, 41, 39, 1)),
-      body: Column(
+      body: SingleChildScrollView(
+          child: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -137,8 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Пожалуйста, введите email';
                             }
-                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}\$')
-                                .hasMatch(value)) {
+                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)){
                               return 'Введите корректный email';
                             }
                             return null;
@@ -180,7 +199,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 : Icons.visibility_off),
                             onPressed: () {
                               setState(() {
-                                _obscureConfirmPassword = !_obscureConfirmPassword;
+                                _obscureConfirmPassword =
+                                    !_obscureConfirmPassword;
                               });
                             },
                           ),
@@ -200,13 +220,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             : ElevatedButton(
                                 onPressed: _submitForm,
                                 style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16, horizontal: 32),
+                                  backgroundColor: Color.fromRGBO(183, 88, 255, 1),
                                 ),
                                 child: const Text(
                                   'Зарегистрироваться',
-                                  style: TextStyle(fontSize: 16),
+                                  style: TextStyle(fontSize: 24,
+                                  color: Colors.white),
                                 ),
                               ),
+                        SizedBox(height: 40,),
                         TextButton(
                           onPressed: () {
                             Navigator.push(
@@ -229,7 +253,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 
@@ -247,7 +271,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       keyboardType: keyboardType,
       validator: validator,
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         labelText: labelText,
         labelStyle: const TextStyle(
           fontFamily: "Jost",
@@ -260,7 +285,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           borderRadius: BorderRadius.circular(50),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color.fromRGBO(183, 88, 255, 1), width: 3),
+          borderSide: const BorderSide(
+              color: Color.fromRGBO(183, 88, 255, 1), width: 3),
           borderRadius: BorderRadius.circular(50),
         ),
         errorBorder: OutlineInputBorder(
@@ -268,7 +294,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           borderRadius: BorderRadius.circular(50),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color.fromRGBO(183, 88, 255, 1), width: 3),
+          borderSide: const BorderSide(
+              color: Color.fromRGBO(183, 88, 255, 1), width: 3),
           borderRadius: BorderRadius.circular(50),
         ),
         suffixIcon: suffixIcon,

@@ -29,14 +29,6 @@ class _SplashScreenState extends State<SplashScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SvgPicture.asset('assets/svg/SQL1-01.svg', width: 271, height: 307),
-              // Padding(
-              //   padding: EdgeInsets.only(left: 20),
-              //   child: SvgPicture.asset(
-              //     'assets/svg/volna.svg',
-              //     width: 274,
-              //     height: 93,
-              //   ),
-              // )
             ]),
       ),
     );

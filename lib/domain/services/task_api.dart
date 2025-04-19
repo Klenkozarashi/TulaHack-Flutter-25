@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_flut/domain/models/task.dart';
 
 class TaskApi {
@@ -12,14 +13,18 @@ class TaskApi {
   }) async {
     final url = Uri.parse('$_baseUrl/sql/execute-task');
 
+final prefs = await SharedPreferences.getInstance();
+final token = prefs.getString('sessionToken');
+
     final headers = {
       'Content-Type': 'application/json',
-
+      'Cookie': 'sessionToken=43ab339d-3554-4346-9faf-27422a1dea2d'
     };
+    print(headers);
 
     final body = jsonEncode({
-      'subTaskId': subTaskId,
-      'query': query,
+      'subTaskId': 7,
+      'query': "SELECT * FROM users;",
     });
 
     final response = await http.post(url, headers: headers, body: body);

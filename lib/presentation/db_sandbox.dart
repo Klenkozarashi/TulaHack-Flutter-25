@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../domain/models/task.dart';
 
 class SQLTrainerPage extends StatefulWidget {
   const SQLTrainerPage({super.key});
@@ -16,59 +13,8 @@ class _SQLTrainerPageState extends State<SQLTrainerPage> {
 
   List<Map<String, dynamic>> _employees = [];
   String _currentTable = 'employees';
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool _hasError = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchDataFromBackend();
-  }
-
-  Future<void> _fetchDataFromBackend() async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://45.155.207.23:4000/api/sql/execute-task'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'subTaskId': 1,
-          'query': 'SELECT * FROM users;'
-        }),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        if (data['success'] == true) {
-          final userResult = data['userResult'] as List<dynamic>;
-          if (userResult.isNotEmpty) {
-            final columns = List<String>.from(userResult[0]['columns']);
-            final values = List<List<dynamic>>.from(userResult[0]['values']);
-
-            _employees = values.map((row) {
-              final Map<String, dynamic> rowMap = {};
-              for (int i = 0; i < columns.length; i++) {
-                rowMap[columns[i]] = row[i];
-              }
-              return rowMap;
-            }).toList();
-          }
-        } else {
-          _hasError = true;
-          _resultText = data['error'] ?? 'Неизвестная ошибка';
-        }
-      } else {
-        _hasError = true;
-        _resultText = 'Ошибка сервера: ${response.statusCode}';
-      }
-    } catch (e) {
-      _hasError = true;
-      _resultText = 'Ошибка подключения: $e';
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
 
   @override
   void dispose() {
@@ -84,14 +30,14 @@ class _SQLTrainerPageState extends State<SQLTrainerPage> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _hasError || _columns.isEmpty
-              ? Center(
-                  child: Text(
-                    _resultText.isNotEmpty ? _resultText : 'Нет данных для отображения',
-                    style: const TextStyle(color: Colors.red),
-                    textAlign: TextAlign.center,
-                  ),
-                )
+          // : _hasError || _columns.isEmpty
+          //     ? Center(
+          //         child: Text(
+          //           _resultText.isNotEmpty ? _resultText : 'Нет данных для отображения',
+          //           style: const TextStyle(color: Colors.red),
+          //           textAlign: TextAlign.center,
+          //         ),
+          //       )
               : Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
