@@ -104,11 +104,13 @@ class _DatabaseGameScreenState extends State<DatabaseGameScreen> {
     return ScaffoldMessenger(
         key: scaffoldMessengerKey,
         child: Scaffold(
-          appBar: AppBar(
-            title: const Text('SQL Relationship Game'),
+          backgroundColor: Color.fromRGBO(39, 41, 39, 1),
+          appBar: AppBar( backgroundColor: Color.fromRGBO(39, 41, 39, 1),
+          title: Text("SQL тренажер базы данных", style: TextStyle(color: Color.fromRGBO(183, 88, 255, 1), fontFamily: "Jost", fontSize: 18),),
             actions: [
               IconButton(
-                icon: const Icon(Icons.undo),
+            
+                icon: const Icon(Icons.undo, color:  Color.fromRGBO(183, 88, 255, 1) ),
                 tooltip: 'Undo last connection',
                 onPressed: () {
                   if (relationships.isNotEmpty) {
@@ -121,13 +123,17 @@ class _DatabaseGameScreenState extends State<DatabaseGameScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('Score: $score'),
+                child: Text('Score: $score',style: TextStyle(color: Color.fromRGBO(183, 88, 255, 1)), ),
+                
               ),
             ],
+           
           ),
-          body: Stack(
+    
+
+        body: Stack(
             children: [
-              // Background
+            
               Container(color: Colors.grey[100]),
 
               // Arrows (drawn behind tables)
@@ -164,7 +170,7 @@ class _DatabaseGameScreenState extends State<DatabaseGameScreen> {
                   }
                 },
                 child: Container(
-                  color: Colors.transparent,
+                  color: const Color.fromARGB(0, 255, 255, 255),
                   child: CustomPaint(
                     painter: ArrowPainter(
                       relationships: relationships,
@@ -179,11 +185,16 @@ class _DatabaseGameScreenState extends State<DatabaseGameScreen> {
 
               // Tables
               ...tables.map((table) {
+                
                 return Positioned(
                   left: table.position.left,
                   top: table.position.top,
                   child: DatabaseTableWidget(
-                    table: table,
+                       table: table,
+                  
+                       
+                 
+                    
                     onDragStart: (details) {
                       setState(() {
                         draggedTable = table;
@@ -267,46 +278,11 @@ class _DatabaseGameScreenState extends State<DatabaseGameScreen> {
               }).toList(),
 
               // Instructions
-              Positioned(
-                bottom: 20,
-                left: 20,
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'How to Play:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text('1. Click on a column to start a connection'),
-                      const Text('2. Click on another column to complete it'),
-                      const Text(
-                          '3. Correct foreign key relationships earn points!'),
-                      const SizedBox(height: 8),
-                      Text('Attempts: $attempts'),
-                    ],
-                  ),
-                ),
-              ),
+             
             ],
           ),
-        ));
+        )
+      );
   }
 
   void _showErrorMessage(String message) {
@@ -361,7 +337,7 @@ class DatabaseTableWidget extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
-            color: table.isSelected ? Colors.blue : Colors.grey,
+            color: table.isSelected ? Color.fromRGBO(183, 88, 255, 1) : const Color.fromARGB(255, 255, 255, 255),
             width: 2,
           ),
           boxShadow: [
@@ -379,7 +355,7 @@ class DatabaseTableWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.blue[50],
+                color: Color.fromRGBO(183, 88, 255, 1),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(2),
                   topRight: Radius.circular(2),
@@ -389,7 +365,7 @@ class DatabaseTableWidget extends StatelessWidget {
                 table.name,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.blue,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -404,7 +380,7 @@ class DatabaseTableWidget extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   decoration: BoxDecoration(
                     color: table.selectedColumn == column
-                        ? Colors.blue[100]
+                        ?Color.fromRGBO(183, 88, 255, 1)
                         : Colors.white,
                     borderRadius: BorderRadius.circular(2),
                     border: Border.all(
@@ -447,7 +423,7 @@ class ArrowPainter extends CustomPainter {
         paint.color = Colors.orange;
         paint.strokeWidth = 4;
       } else {
-        paint.color = rel.isCorrect ? Colors.green : Colors.red;
+        paint.color = rel.isCorrect ? const Color.fromARGB(255, 175, 194, 176) : const Color.fromARGB(255, 212, 142, 137);
         paint.strokeWidth = 2;
       }
 

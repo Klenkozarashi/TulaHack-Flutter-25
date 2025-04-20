@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:test_flut/domain/models/task.dart';
 import 'package:test_flut/domain/services/task_api.dart';
 import 'package:test_flut/presentation/tasks_list.dart';
+import 'dart:convert';
 
 class SQLTrainerPage extends StatefulWidget {
   final int taskId;
@@ -17,11 +18,12 @@ class _SQLTrainerPageState extends State<SQLTrainerPage> {
   final TextEditingController _queryController = TextEditingController();
   final TaskApi taskApi = TaskApi();
 
-  int _selectedSubtaskIndex = -1;
+  List<SubTask> _subTasks = [];
+  SubTask? _selectedSubTask;
 
   void _selectSubtask(int index) {
     setState(() {
-      _selectedSubtaskIndex = index;
+      _selectedSubTask = _subTasks[index];
     });
   }
 
@@ -56,9 +58,10 @@ class _SQLTrainerPageState extends State<SQLTrainerPage> {
       final task = Task.fromJson(taskData);
 
       setState(() {
+        _isLoading = false;
         _columns = task.columns;
         _currentTable = task.table;
-        _isLoading = false;
+        _subTasks = task.subTasks;
       });
     } catch (e) {
       setState(() {
@@ -149,10 +152,16 @@ class _SQLTrainerPageState extends State<SQLTrainerPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 20),
-                      _buildSubtaskButton(0, 'Вывести всех сотрудников'),
-                      const SizedBox(height: 10),
-                      _buildSubtaskButton(
-                          1, 'Увеличить зарплату IT-сотрудников на 10%'),
+                      ..._subTasks.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final subTask = entry.value;
+                        return Column(
+                          children: [
+                            _buildSubtaskButton(index, subTask.name),
+                            const SizedBox(height: 10),
+                          ],
+                        );
+                      }).toList(),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -212,16 +221,72 @@ class _SQLTrainerPageState extends State<SQLTrainerPage> {
 
   List<String> _columns = [];
 
-  void _executeQuery() {
+  void _executeQuery() async {
     final query = _queryController.text.trim();
 
-    setState(() {
-      if (query.isEmpty) {
+    if (_selectedSubTask == null) {
+      setState(() {
+        _resultText = 'Выберите подзадачу перед выполнением запроса';
+      });
+      return;
+    }
+
+    if (query.isEmpty) {
+      setState(() {
         _resultText = 'Введите SQL запрос';
-      } else {
-        _resultText = 'Режим выполнения запроса еще не реализован.';
-      }
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _resultText = '';
     });
+
+    try {
+      final response = await taskApi.executeTask(
+        subTaskId: _selectedSubTask!.id,
+        query: query,
+      );
+
+      if (response is ApiSuccessResponse) {
+        final userResult = response.userResult;
+
+        if (userResult != null && userResult.isNotEmpty) {
+          final firstResult = userResult.first;
+          final columns = List<String>.from(firstResult['columns']);
+          final values = List<List<dynamic>>.from(firstResult['values']);
+
+          setState(() {
+            _isLoading = false;
+            _columns = columns;
+            _resultTable = values.map((row) {
+              return Map<String, dynamic>.fromIterables(
+                columns,
+                row,
+              );
+            }).toList();
+            _resultText = '';
+          });
+        } else {
+          setState(() {
+            _isLoading = false;
+            _resultText = 'Нет данных для отображения';
+          });
+        }
+      } 
+      //else if (response is ApiErrorResponse) {
+      //   setState(() {
+      //     _isLoading = false;
+      //     _resultText = response.message ?? 'Неизвестная ошибка';
+      //   });
+      // }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _resultText = 'Ошибка выполнения запроса: $e';
+      });
+    }
   }
 
   Widget _buildResultArea() {
@@ -271,7 +336,8 @@ class _SQLTrainerPageState extends State<SQLTrainerPage> {
   }
 
   Widget _buildSubtaskButton(int index, String label) {
-    final bool isSelected = _selectedSubtaskIndex == index;
+    final bool isSelected =
+        _selectedSubTask != null && _subTasks[index].id == _selectedSubTask!.id;
 
     return ElevatedButton(
       onPressed: () => _selectSubtask(index),
@@ -288,6 +354,32 @@ class _SQLTrainerPageState extends State<SQLTrainerPage> {
       ),
       child:
           Text(label, style: const TextStyle(fontFamily: 'Jost', fontSize: 16)),
+    );
+  }
+}
+
+class ApiSuccessResponse implements ApiResponse {
+  final bool success;
+  final bool isCorrect;
+  final List<dynamic>? userResult;
+  final List<dynamic>? correctResult;
+  final int? executionTimeMs;
+
+  ApiSuccessResponse({
+    required this.success,
+    required this.isCorrect,
+    this.userResult,
+    this.correctResult,
+    this.executionTimeMs,
+  });
+
+  factory ApiSuccessResponse.fromJson(Map<String, dynamic> json) {
+    return ApiSuccessResponse(
+      success: json['success'],
+      isCorrect: json['isCorrect'],
+      userResult: json['userResult'],
+      correctResult: json['correctResult'],
+      executionTimeMs: json['executionTimeMs'],
     );
   }
 }

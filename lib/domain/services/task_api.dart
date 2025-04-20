@@ -5,7 +5,7 @@ import 'package:test_flut/domain/models/task.dart';
 
 class TaskApi {
   TaskApi();
-  static const String _baseUrl = 'http://45.155.207.23:4000/api';
+  static const String _baseUrl = 'http://localhost:4000/api';
 
   Future<ApiResponse> executeTask({
     required int subTaskId,
@@ -18,7 +18,7 @@ class TaskApi {
 
     final headers = {
       'Content-Type': 'application/json',
-      'Cookie': 'sessionToken=$token'
+      'Cookie': 'sessionToken=ee01e9db-ffce-4957-a044-3fd44de1b4db'
     };
 
     final body = jsonEncode({
