@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_flut/presentation/login.dart';
 import 'package:test_flut/presentation/registration.dart';
 
 class MyApp extends StatelessWidget {
@@ -12,7 +13,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Color.fromARGB(0, 255, 255, 255),
       ),
-      home: RegisterScreen(),
+      home: LoginScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

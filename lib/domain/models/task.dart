@@ -44,6 +44,9 @@ class Task {
   final String description;
   final String sqlSchema;
   final String fillData;
+  final String level;
+  final String table;
+  final List<String> columns; // изменили Array на List<String>
 
   Task({
     required this.id,
@@ -51,6 +54,9 @@ class Task {
     required this.description,
     required this.sqlSchema,
     required this.fillData,
+    required this.level,
+    required this.table,
+    required this.columns,
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
@@ -60,6 +66,9 @@ class Task {
       description: json['description'],
       sqlSchema: json['sqlSchema'],
       fillData: json['fillData'],
+      level: json['level'],
+      table: json['table'],
+      columns: List<String>.from(json['columns']), // важно сконвертировать
     );
   }
 
@@ -70,6 +79,9 @@ class Task {
       'description': description,
       'sqlSchema': sqlSchema,
       'fillData': fillData,
+      'level': level,
+      'table': table,
+      'columns': columns,
     };
   }
 }

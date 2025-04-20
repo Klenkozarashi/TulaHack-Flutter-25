@@ -13,18 +13,17 @@ class TaskApi {
   }) async {
     final url = Uri.parse('$_baseUrl/sql/execute-task');
 
-final prefs = await SharedPreferences.getInstance();
-final token = prefs.getString('sessionToken');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('sessionToken');
 
     final headers = {
       'Content-Type': 'application/json',
-      'Cookie': 'sessionToken=43ab339d-3554-4346-9faf-27422a1dea2d'
+      'Cookie': 'sessionToken=$token'
     };
-    print(headers);
 
     final body = jsonEncode({
-      'subTaskId': 7,
-      'query': "SELECT * FROM users;",
+      'subTaskId': subTaskId,
+      'query': query,
     });
 
     final response = await http.post(url, headers: headers, body: body);
@@ -50,6 +49,17 @@ final token = prefs.getString('sessionToken');
       return data.map((json) => Task.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load tasks');
+    }
+  }
+
+  Future<Map<String, dynamic>> getTask(int id) async {
+    final url = Uri.parse('$_baseUrl/task/$id');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Не удалось загрузить задание: ${response.statusCode}');
     }
   }
 }
